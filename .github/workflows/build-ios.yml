@@ -1,0 +1,62 @@
+name: Build KRYONIX Unsigned IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Check project
+        run: xcodebuild -list -project KRYONIX.xcodeproj
+
+      - name: Build unsigned app
+        run: |
+          xcodebuild \
+            -project KRYONIX.xcodeproj \
+            -scheme KRYONIX \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Create unsigned IPA
+        run: |
+          APP_PATH=$(find "$RUNNER_TEMP/DerivedData/Build/Products" \
+            -type d -name "KRYONIX.app" | head -1)
+
+          if [ -z "$APP_PATH" ]; then
+            echo "KRYONIX.app not found"
+            exit 1
+          fi
+
+          mkdir -p "$RUNNER_TEMP/ipa/Payload"
+          cp -R "$APP_PATH" "$RUNNER_TEMP/ipa/Payload/KRYONIX.app"
+
+          cd "$RUNNER_TEMP/ipa"
+          zip -qry "$RUNNER_TEMP/KRYONIX-v2.0-unsigned.ipa" Payload
+
+          ls -lh "$RUNNER_TEMP/KRYONIX-v2.0-unsigned.ipa"
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: KRYONIX-v2.0-Unsigned-IPA
+          path: ${{ runner.temp }}/KRYONIX-v2.0-unsigned.ipa
+          if-no-files-found: error
