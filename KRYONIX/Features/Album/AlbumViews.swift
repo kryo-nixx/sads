@@ -238,7 +238,7 @@ struct AlbumGridView: View {
                 .disabled(importing)
             }
         }
-        .onChange(of: pickerItems) { _, items in
+        .onChange(of: pickerItems) { items in
             guard !items.isEmpty else { return }
             importing = true
             Task {

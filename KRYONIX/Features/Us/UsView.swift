@@ -115,7 +115,7 @@ struct UsView: View {
                         Text(profile.nickname).font(KRYTheme.rounded(14, .semibold)).foregroundStyle(.secondary)
                     }
                     Spacer()
-                    Text(profile.badge).font(.caption2.black()).padding(.horizontal, 9).padding(.vertical, 5).background(KRYTheme.accent2.opacity(0.15), in: Capsule())
+                    Text(profile.badge).font(.caption2.weight(.black)).padding(.horizontal, 9).padding(.vertical, 5).background(KRYTheme.accent2.opacity(0.15), in: Capsule())
                 }
                 if !profile.bio.isEmpty {
                     Text(profile.bio).font(KRYTheme.rounded(14))
@@ -165,7 +165,7 @@ struct EditProfileView: View {
                     }
                 }
             }
-            .onChange(of: avatarItem) { _, item in
+            .onChange(of: avatarItem) { item in
                 guard let item else { return }
                 Task {
                     if let imported = try? await MediaStore.importPickerItem(item) {
@@ -177,7 +177,7 @@ struct EditProfileView: View {
                     }
                 }
             }
-            .onChange(of: coverItem) { _, item in
+            .onChange(of: coverItem) { item in
                 guard let item else { return }
                 Task {
                     if let imported = try? await MediaStore.importPickerItem(item) {

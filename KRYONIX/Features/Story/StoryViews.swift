@@ -165,7 +165,7 @@ struct CreateStoryView: View {
                     .disabled(imported == nil || isImporting)
                 }
             }
-            .onChange(of: pickerItem) { _, newValue in
+            .onChange(of: pickerItem) { newValue in
                 guard let newValue else { return }
                 isImporting = true
                 Task {

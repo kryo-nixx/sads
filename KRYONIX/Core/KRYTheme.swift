@@ -49,3 +49,30 @@ struct KRYPressStyle: ButtonStyle {
             .animation(.spring(response: 0.22, dampingFraction: 0.72), value: configuration.isPressed)
     }
 }
+
+
+struct AnimatedOrbBackground: View {
+    @State private var animate = false
+
+    var body: some View {
+        ZStack {
+            KRYTheme.background
+            Circle()
+                .fill(KRYTheme.accent.opacity(0.12))
+                .frame(width: 260)
+                .blur(radius: 18)
+                .offset(x: animate ? 150 : -130, y: animate ? -240 : 210)
+            Circle()
+                .fill(KRYTheme.accent2.opacity(0.12))
+                .frame(width: 320)
+                .blur(radius: 26)
+                .offset(x: animate ? -150 : 150, y: animate ? 240 : -220)
+        }
+        .ignoresSafeArea()
+        .onAppear {
+            withAnimation(.easeInOut(duration: 8).repeatForever(autoreverses: true)) {
+                animate.toggle()
+            }
+        }
+    }
+}

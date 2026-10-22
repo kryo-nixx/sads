@@ -17,7 +17,7 @@ final class AudioRecorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
 
         do {
             let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth])
+            try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetoothHFP])
             try session.setActive(true)
 
             let name = "\(UUID().uuidString).m4a"

@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import PhotosUI
 import UniformTypeIdentifiers
 import AVFoundation
@@ -38,7 +39,7 @@ enum MediaStore {
 
         let type: StoredMediaType
         let ext: String
-        if types.contains(where: { $0.conforms(to: .movie) }) {
+        if types.contains(where: { $0.conforms(to: UTType.movie) }) {
             type = .video
             ext = "mov"
         } else {
@@ -47,7 +48,7 @@ enum MediaStore {
         }
 
         let name = "\(UUID().uuidString).\(ext)"
-        try data.write(to: folderURL.appendingPathComponent(name), options: .atomic)
+        try data.write(to: folderURL.appendingPathComponent(name), options: Data.WritingOptions.atomic)
         return ImportedMedia(relativePath: name, type: type)
     }
 

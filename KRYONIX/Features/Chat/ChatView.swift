@@ -76,7 +76,7 @@ struct ChatView: View {
                         .padding(.horizontal, 12).padding(.vertical, 10)
                     }
                     .background(chatWallpaper)
-                    .onChange(of: allMessages.count) { _, _ in
+                    .onChange(of: allMessages.count) { _ in
                         if let last = allMessages.last {
                             withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) { proxy.scrollTo(last.id, anchor: .bottom) }
                         }
@@ -98,7 +98,7 @@ struct ChatView: View {
             .alert("Micro", isPresented: Binding(get: { recorder.errorText != nil }, set: { if !$0 { recorder.errorText = nil } })) {
                 Button("OK") { recorder.errorText = nil }
             } message: { Text(recorder.errorText ?? "") }
-            .onChange(of: attachment) { _, item in
+            .onChange(of: attachment) { item in
                 guard let item else { return }
                 Task {
                     if let imported = try? await MediaStore.importPickerItem(item) {
@@ -267,14 +267,18 @@ struct ChatSettingsSheet: View {
 
     var body: some View {
         NavigationStack {
-            if let appSettings = settings.first {
-                Form {
-                    Picker("Wallpaper", selection: Binding(get: { appSettings.chatWallpaper }, set: { appSettings.chatWallpaper = $0; try? context.save() })) {
-                        ForEach(["Blush Glass", "Lavender Sky", "Mint Cloud", "Midnight"], id: \.self) { Text($0).tag($0) }
+            Group {
+                if let appSettings = settings.first {
+                    Form {
+                        Picker("Wallpaper", selection: Binding(get: { appSettings.chatWallpaper }, set: { appSettings.chatWallpaper = $0; try? context.save() })) {
+                            ForEach(["Blush Glass", "Lavender Sky", "Mint Cloud", "Midnight"], id: \.self) { Text($0).tag($0) }
+                        }
+                        Picker("Hiệu ứng", selection: Binding(get: { appSettings.chatEffect }, set: { appSettings.chatEffect = $0; try? context.save() })) {
+                            ForEach(["Soft Pop", "Glow", "Bounce", "Minimal"], id: \.self) { Text($0).tag($0) }
+                        }
                     }
-                    Picker("Hiệu ứng", selection: Binding(get: { appSettings.chatEffect }, set: { appSettings.chatEffect = $0; try? context.save() })) {
-                        ForEach(["Soft Pop", "Glow", "Bounce", "Minimal"], id: \.self) { Text($0).tag($0) }
-                    }
+                } else {
+                    ProgressView()
                 }
             }
             .navigationTitle("Chat")
